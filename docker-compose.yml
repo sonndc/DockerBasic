@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  # Backend PHP Service
+  ????:
+    build:
+      context: ./docker
+      dockerfile: app.dockerfile
+    container_name: ????
+    working_dir: /var/www
+    volumes:
+      - ./app:/var/www
+      - ./docker/app/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # Backend Nginx Service
+  ????:
+    image: nginx:alpine
+    container_name: ????
+    ports:
+      - "????:????"
+    volumes:
+      - ./app:/var/www
+      - ./docker/app/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - ????
+    networks:
+      - app-network
+
+  # Frontend Service
+  ????:
+    image: node:20
+    container_name: ????
+    ports:
+      - "????:????"
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    depends_on:
+      - app-server
+    command: ["npm", "run", "dev"]
+    networks:
+      - app-network
+
+  # MySQL Service
+  ????:
+    image: mysql:8.0
+    container_name: ????
+    ports:
+      - "????:????"
+    environment:
+      MYSQL_DATABASE: app
+      MYSQL_ROOT_PASSWORD: 8888
+    volumes:
+      - ./db:/var/lib/mysql/
+    networks:
+      - app-network
+
+# Docker Networks
+networks:
+  app-network:
+    driver: bridge
